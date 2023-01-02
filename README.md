@@ -17,8 +17,7 @@
     npm i webpack webpack-cli --save-dev
     ```
 
-## 2.3. webpack.config.js
-* webpack 사용을 위한, 환경 파일을 만듭니다.
+* webpack 사용을 위한 환경 파일인 `webpack.config.js`을 만듭니다.
     ```
     // node에서 제공하는 path모듈
     // 파일이나 폴더의 경로작업을 위한 기능제공
@@ -37,11 +36,136 @@
     };
 
     ```
-## 2.4. package.json
+
 * webpack 실행을 위해, script를 일부 수정합니다.
     ```
       "scripts": {
-        "build": "webpack", // 추가
+        "build": "webpack --mode=production", // 추가: mode는 production mode로 진행 (development는 작업 중 에러 발생 시, 에러를 수정할 수있도록 하기 때문에 코드가 길움) 
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     ```
+
+## 2.3. html-webpack-plugin
+* 배포 시, js/main.js만 배포하는 건 불가능합니다.
+* html 파일도 배포할 수 있도록, 추가적으로 설치해주어야 합니다.
+    ```
+    npm i html-webpack-plugin
+    ```
+
+* 이후, 설치한 html-webpack-plugin을 불러와 사용할 수 있도록, webpack.config.js 파일을 수정합니다.
+    ```
+    const path = require('path');
+    const HtmlWebpackPlugin = require("html-webpack-plugin"); // 추가
+
+    module.exports = {
+    context: __dirname,
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'js'),
+        filename: 'main.js', 
+    },
+    module: {
+
+    },
+    plugins : [ // 추가
+        new HtmlWebpackPlugin({
+        template: './index.html' // 기존에 만들었던 파일을 이용해서 빌드 수행
+    }),
+    ]
+    };
+    ```
+* 이후 npm run build 수행 시, output 폴더에 index.html파일이 추가됩니다.
+
+## 2.4. webpack-dev-server
+* 매번 webpack 명령어를 실행하는 등의 번거로운 작업을 간소화 할 수 있도록 합니다.
+* 개발하기 쉽도록 서버를 띄워줍니다.
+    ```
+    npm i webpack-dev-server -D
+    ```
+
+* webpack.config.js를 수정합니다.
+    ```
+
+    const path = require('path');
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+    module.exports = {
+    context: __dirname,
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'js'), 
+        filename: 'main.js',
+    },
+    module: {
+
+    },
+    plugins : [
+        new HtmlWebpackPlugin({
+            template: './index.html' 
+        }),
+    ],
+    devServer: { // 추가
+        static: {
+            directory: path.resolve(__dirname, 'js') // 파일경로 작성
+        },
+        port: 8080, // 서버구동포트
+    }
+    };
+    ```
+
+* package.json파일에서 scripts에 "start" 명령어를 추가합니다.
+    ```
+    "scripts": {
+        "start": "webpack serve --open --mode=development",
+        "build": "webpack",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    ```
+
+* 이제 `src/index.js`, `src/util.js` 등 폴더에서 변경사항이 생기면 자동으로 webpack이 사용됩니다.
+
+## 2.5. style-loader, css-loader
+* style-loader와 css-loader를 설치합니다.
+    * css-loader는 css파일을 읽어줍니다.
+    * style-loader는 읽은 css를 style 태그로 만들어줍니다.
+        * 그리고 `<head>`내부에 이 style을 넣어 바로 적용될 수 있도록 합니다.
+
+    ```
+    npm i -D style-loader css-loader
+    ```
+
+* webpack.config.js파일 내 module의 rules를 추가합니다.
+    ```
+    const path = require('path');
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+    module.exports = {
+    context: __dirname,
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'js'), 
+        filename: 'main.js', 
+    },
+    module: { // 추가
+        rules:[
+            {
+                test: /\.css$/, // 확장자가 css일 때
+                use: ["style-loader", "css-loader"] //css-loader로 읽고, style-loader로 적용
+            }
+        ]
+    },
+    plugins : [
+        new HtmlWebpackPlugin({
+            template: './index.html' 
+        }),
+    ],
+    devServer: {
+        static: {
+            directory: path.resolve(__dirname, 'js') 
+        },
+        port: 8080, 
+    }
+    };
+    ```
+
+* src/style.css를 만들고, src/index.js에서는 이를 import합니다.
