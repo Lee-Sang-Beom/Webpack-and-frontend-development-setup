@@ -2,6 +2,7 @@
 // 파일이나 폴더의 경로작업을 위한 기능제공
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   context: __dirname,
@@ -14,7 +15,9 @@ module.exports = {
     rules:[
         {
             test: /\.css$/, // 확장자가 css일 때
-            use: ["style-loader", "css-loader"] //css-loader로 읽고, style-loader로 적용
+            // use: ["style-loader", "css-loader"] // css-loader로 읽고, style-loader로 적용
+            use: [MiniCssExtractPlugin.loader, "css-loader"] // css-loader로 읽고, head에 style태그를 만드는방식으로 넣는게아니라 (style-loader) 외부에서 가져오는 방식이기 때문에 Minicssextractplugin 사용
+            
         }
     ]
   },
@@ -22,6 +25,9 @@ module.exports = {
     new HtmlWebpackPlugin({
         template: './index.html' 
     }),
+    new MiniCssExtractPlugin({
+        filename:'common.css'
+    })
   ],
   devServer: {
     static: {

@@ -169,3 +169,56 @@
     ```
 
 * src/style.css를 만들고, src/index.js에서는 이를 import합니다.
+
+
+## 2.6. mini-css-extract-plugin
+* `2.5`는 css파일을 internal방식으로 사용하는 방법입니다.
+* css 파일을 별도로 만들어 가져와야 할 상황에서 사용할 수 있습니다.
+    ```
+    npm i -D mini-css-extract-plugin
+    ```
+* webpack.config.js를 수정합니다. (rule 변경)
+    ```
+
+    const path = require('path');
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+    const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+    module.exports = {
+    context: __dirname,
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'js'), 
+        filename: 'main.js', 
+    },
+    module: {
+        rules:[
+            {
+                test: /\.css$/, // 확장자가 css일 때
+                // use: ["style-loader", "css-loader"] // css-loader로 읽고, style-loader로 적용
+                use: [MiniCssExtractPlugin.loader, "css-loader"] // css-loader로 읽고, head에 style태그를 만드는방식으로 넣는게아니라 (style-loader) 외부에서 가져오는 방식이기 때문에 Minicssextractplugin 사용
+                
+            }
+        ]
+    },
+    plugins : [
+        new HtmlWebpackPlugin({
+            template: './index.html' 
+        }),
+
+        // 추가
+        new MiniCssExtractPlugin({
+            filename:'common.css' // 추가된 파일은 common.css 파일이라는 이름을 가진다.
+        })
+    ],
+    devServer: {
+        static: {
+            directory: path.resolve(__dirname, 'js') // 파일경로 작성
+        },
+        port: 8080, // 서버구동포트
+    }
+    };
+    ```
+
+* 브라우저 F12의 요소의 head 태그를 살펴보면, `<link href="외부파일.css">`형식으로 css파일을 불러온 것을 확인할 수 있습니다. 
+    * 혹은 `npm run build`로, output폴더 내에 생성된 css 파일을 확인해도 됩니다.
