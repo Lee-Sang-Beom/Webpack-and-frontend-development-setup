@@ -288,3 +288,55 @@
 
     document.getElementById("root").innerHTML = img + text + num;
     ```
+
+
+## 2.8. clean-webpack-plugin
+* 이전 build때 사용하고, 더이상 사용하지 않는 파일을 정리할 수 있도록 기능을 지원하는 clean-webpack-plugin을 설치합니다. 
+    * 예시: 이미지 파일을 사용했다가, 더이상 사용하지 않을 때
+    ```
+    npm i -D clean-webpack-plugin
+    ```
+
+* webpack.config.js 파일에, 설치한 플러그인을 추가합니다.
+    ```
+    const path = require('path');
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+    const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+    const {CleanWebpackPlugin} = require("clean-webpack-plugin"); // default export가 설정되어있지않아 중괄호로 감싸야 함
+
+    module.exports = {
+    context: __dirname,
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'js'), 
+        filename: 'main.js', 
+    },
+    module: {
+        rules:[
+            {
+                test: /\.css$/, // 확장자가 css일 때
+                // use: ["style-loader", "css-loader"] 
+                use: [MiniCssExtractPlugin.loader, "css-loader"]
+            },{
+            test: /\.png$/,
+            use: ["file-loader"]
+            }
+        ]
+    },
+    plugins : [
+        new HtmlWebpackPlugin({
+            template: './index.html' 
+        }),
+        new MiniCssExtractPlugin({
+            filename:'common.css'
+        }),
+        new CleanWebpackPlugin(), // 추가
+    ],
+    devServer: {
+        static: {
+            directory: path.resolve(__dirname, 'js') 
+        },
+        port: 8080, 
+    }
+    };
+    ```

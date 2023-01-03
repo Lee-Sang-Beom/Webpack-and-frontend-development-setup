@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Lee-Sang-Beom/Webpack-and-frontend-development-setup#readme",
   "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
     "cli": "^1.0.1",
     "css-loader": "^6.7.3",
     "file-loader": "^6.2.0",

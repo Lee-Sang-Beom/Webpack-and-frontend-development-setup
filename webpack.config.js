@@ -3,6 +3,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin"); // default export가 설정되어있지않아 중괄호로 감싸야 함
 
 module.exports = {
   context: __dirname,
@@ -29,7 +30,8 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
         filename:'common.css'
-    })
+    }),
+    new CleanWebpackPlugin(),
   ],
   devServer: {
     static: {

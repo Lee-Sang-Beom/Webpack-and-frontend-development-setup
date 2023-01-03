@@ -5,3 +5,18 @@ body{
 h1{
     color: yellow;
 }
+li{
+    list-style: none;
+}
+
+.user{
+    font-size:20px;
+    margin-top:10px;
+    background-color: #444;
+    padding: 10px;
+}
+
+img{
+    width: 300px;
+    height: 230px;
+}
