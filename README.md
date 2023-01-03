@@ -222,3 +222,69 @@
 
 * 브라우저 F12의 요소의 head 태그를 살펴보면, `<link href="외부파일.css">`형식으로 css파일을 불러온 것을 확인할 수 있습니다. 
     * 혹은 `npm run build`로, output폴더 내에 생성된 css 파일을 확인해도 됩니다.
+
+
+
+## 2.7. file-loader
+* 이미지 로드를 수행하기 위한 file-loader를 설치합니다.
+    ```
+    npm i -D file-loader
+    ```
+
+* webpack.config.js 파일에, 설치한 file-loader를 추가합니다.
+    ```
+    const path = require('path');
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+    const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+    module.exports = {
+    context: __dirname,
+    entry: './src/index.js',
+    output: {
+        path: path.resolve(__dirname, 'js'),
+        filename: 'main.js', 
+    },
+    module: {
+        rules:[
+            {
+                test: /\.css$/,
+                // use: ["style-loader", "css-loader"] 
+                use: [MiniCssExtractPlugin.loader, "css-loader"] 
+            },{
+                // 추가
+            test: /\.png$/, // 추가할 확장자 파일
+            use: ["file-loader"] // 사용할 로더
+            }
+        ]
+    },
+    plugins : [
+        new HtmlWebpackPlugin({
+            template: './index.html' 
+        }),
+        new MiniCssExtractPlugin({
+            filename:'common.css'
+        })
+    ],
+    devServer: {
+        static: {
+            directory: path.resolve(__dirname, 'js') 
+        },
+        port: 8080, 
+    }
+    };
+
+    ```
+
+* src/index.js 에 아래처럼 img 태그 사용을 추가하고 npm start 명령어로 webpack-dev-server를 구동합니다.
+    ```
+    import {add, hello} from "./util";
+    import "./style.css";
+    import "./header.css"
+    import logo from "./images/forestLogo.png";
+
+    const text = hello("<h1>LEEEee!</h1>");
+    const num = add(1,2);
+    const img = `<img src=${logo} alt="ori"/>`; // 추가
+
+    document.getElementById("root").innerHTML = img + text + num;
+    ```

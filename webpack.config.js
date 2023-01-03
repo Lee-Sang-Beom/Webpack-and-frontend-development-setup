@@ -17,7 +17,9 @@ module.exports = {
             test: /\.css$/, // 확장자가 css일 때
             // use: ["style-loader", "css-loader"] // css-loader로 읽고, style-loader로 적용
             use: [MiniCssExtractPlugin.loader, "css-loader"] // css-loader로 읽고, head에 style태그를 만드는방식으로 넣는게아니라 (style-loader) 외부에서 가져오는 방식이기 때문에 Minicssextractplugin 사용
-            
+        },{
+          test: /\.png$/,
+          use: ["file-loader"]
         }
     ]
   },
